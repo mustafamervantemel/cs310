@@ -1,4 +1,3 @@
-/// FILE: lib/main.dart
 import 'package:flutter/material.dart';
 
 import 'utils/app_colors.dart';
@@ -19,6 +18,11 @@ import 'screens/purchased_notes_screen.dart';
 import 'screens/uploaded_notes_screen.dart';
 import 'screens/note_detail_screen.dart';
 import 'screens/ta_profile_screen.dart';
+import 'screens/edit_note_screen.dart';
+import 'models/note_model.dart';
+
+// Bu sadece uygulama yeniden çalıştırılana kadar tutar (temporary)
+bool hasSeenWelcome = false;
 
 void main() {
   runApp(const SuNoteApp());
@@ -33,8 +37,8 @@ class SuNoteApp extends StatelessWidget {
       title: 'SuNote',
       debugShowCheckedModeBanner: false,
 
-      // Uygulama açıldığında ilk karşımıza Welcome geliyor.
-      initialRoute: '/welcome',
+      // İlk açılan ekran
+      initialRoute: hasSeenWelcome ? '/login' : '/welcome',
 
       theme: ThemeData(
         primaryColor: AppColors.navy,
@@ -44,24 +48,21 @@ class SuNoteApp extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
       ),
 
       routes: {
-        // Auth
+        '/welcome': (context) {
+          hasSeenWelcome = true; // Bir kere göründü → bir daha görünmeyecek
+          return const WelcomeScreen();
+        },
+
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
 
-        // Onboarding
         '/onboarding1': (context) => const Onboarding1Screen(),
         '/onboarding2': (context) => const Onboarding2Screen(),
         '/onboarding3': (context) => const Onboarding3Screen(),
 
-        // Main screens
         '/home': (context) => HomeScreen(),
         '/searchResults': (context) => const SearchResultsScreen(),
         '/uploadNote': (context) => const UploadNoteScreen(),
@@ -71,9 +72,17 @@ class SuNoteApp extends StatelessWidget {
         '/uploadedNotes': (context) => const UploadedNotesScreen(),
         '/noteDetail': (context) => const NoteDetailScreen(),
         '/taProfile': (context) => const TaProfileScreen(),
+      },
 
-        // Optional welcome
-        '/welcome': (context) => const WelcomeScreen(),
+      onGenerateRoute: (settings) {
+        if (settings.name == '/editNote') {
+          final note = settings.arguments as NoteModel;
+
+          return MaterialPageRoute(
+            builder: (context) => EditNoteScreen(note: note),
+          );
+        }
+        return null;
       },
     );
   }

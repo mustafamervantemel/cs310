@@ -11,6 +11,44 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   String _selectedLanguage = 'English';
+  String aboutText = "Tell others about yourself...";
+
+  void _editAboutYourself() {
+    TextEditingController controller = TextEditingController(text: aboutText);
+
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Edit About Yourself"),
+          content: TextField(
+            controller: controller,
+            maxLines: 5,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  aboutText = controller.text.trim().isEmpty
+                      ? "Tell others about yourself..."
+                      : controller.text;
+                });
+                Navigator.pop(context);
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _showAboutDialog() {
     showDialog<void>(
@@ -204,16 +242,35 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             // STATS CARDS
             Row(
-              children: const [
-                StatInfoCard(
-                  icon: Icons.shopping_bag,
-                  title: 'Purchased Notes',
-                  value: '12',
+              children: [
+                // PURCHASED NOTES CARD (Clickable)
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/purchasedNotes');
+                    },
+                    child: const StatInfoCard(
+                      icon: Icons.shopping_bag,
+                      title: 'Purchased Notes',
+                      value: '12',
+                    ),
+                  ),
                 ),
-                StatInfoCard(
-                  icon: Icons.upload_file,
-                  title: 'Uploaded Notes',
-                  value: '4',
+
+                const SizedBox(width: 12),
+
+                // UPLOADED NOTES CARD (Clickable)
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/uploadedNotes');
+                    },
+                    child: const StatInfoCard(
+                      icon: Icons.upload_file,
+                      title: 'Uploaded Notes',
+                      value: '4',
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -230,21 +287,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ),
             const SizedBox(height: 8),
 
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.greyCard.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Text(
-                'Tell others about yourself...',
-                style: TextStyle(fontSize: 13),
+            GestureDetector(
+              onTap: _editAboutYourself,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.greyCard.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  aboutText,
+                  style: const TextStyle(fontSize: 13),
+                ),
               ),
             ),
-
-            const SizedBox(height: 24),
-
             // GENERAL SETTINGS TITLE
             Container(
               width: double.infinity,

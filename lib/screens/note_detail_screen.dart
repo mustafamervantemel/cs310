@@ -1,7 +1,5 @@
-// FILE: lib/screens/note_detail_screen.dart
-
 import 'dart:io';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../models/note_model.dart';
 import '../utils/app_colors.dart';
@@ -11,9 +9,11 @@ class NoteDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // HomeScreen'den arguments olarak NoteModel yollamıştık
     final NoteModel note =
     ModalRoute.of(context)!.settings.arguments as NoteModel;
+
+    /// Web ve Mobil için çalışan preview görseli seç
+    String? previewImage = kIsWeb ? note.imageUrl : note.imagePath;
 
     return Scaffold(
       appBar: AppBar(
@@ -21,9 +21,7 @@ class NoteDetailScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () {
-              Navigator.pushNamed(context, '/checkout');
-            },
+            onPressed: () => Navigator.pushNamed(context, '/checkout'),
           ),
         ],
       ),
@@ -32,7 +30,8 @@ class NoteDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Üst bilgi kartı
+
+            // CARD
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
@@ -43,50 +42,38 @@ class NoteDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    note.title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(note.title,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text('Course: ${note.courseCode}'),
-                  Text('Instructor: ${note.instructor}'),
+                  Text("Course: ${note.courseCode}"),
+                  Text("Instructor: ${note.instructor}"),
                   const SizedBox(height: 4),
-                  Text(
-                    'Price: ₺${note.price.toStringAsFixed(0)}',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
+                  Text("Price: ₺${note.price.toStringAsFixed(0)}",
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
 
             const SizedBox(height: 16),
 
-            // TA bilgisi
+            // TA
             Row(
               children: [
                 const CircleAvatar(
-                  radius: 20,
-                  backgroundImage: NetworkImage('https://picsum.photos/200'),
+                  radius: 24,
+                  backgroundImage: NetworkImage("https://picsum.photos/200"),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        note.taName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      Text(
-                        '${note.taRole} · ${note.courseCode}',
-                        style: const TextStyle(fontSize: 12),
-                      ),
+                      Text(note.taName,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
+                      Text("${note.taRole} · ${note.courseCode}",
+                          style: const TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),
@@ -94,45 +81,14 @@ class NoteDetailScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushNamed(context, '/taProfile');
                   },
-                  child: const Text('View Profile'),
-                ),
+                  child: const Text("View Profile"),
+                )
               ],
             ),
 
             const SizedBox(height: 16),
 
-            const Text(
-              'Comments:',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // Basit comment kartları (widget gibi gözüksün diye)
-            Column(
-              children: const [
-                _CommentTile(
-                  name: 'Selin Delikaya',
-                  comment: 'Very helpful notes!',
-                ),
-                SizedBox(height: 6),
-                _CommentTile(
-                  name: 'Mert Yılmaz',
-                  comment: 'Clear explanations and perfect summaries.',
-                ),
-                SizedBox(height: 6),
-                _CommentTile(
-                  name: 'Ayşe Karaca',
-                  comment: 'Helped me a lot before the quiz!',
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // Add to Cart butonu (sadece snackbar, repo yok!)
+            // ADD TO CART
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -140,96 +96,71 @@ class NoteDetailScreen extends StatelessWidget {
                   backgroundColor: AppColors.navy,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
                 ),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                          '"${note.title}" added to cart (demo – no backend).'),
-                    ),
-                  );
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('"${note.title}" added to cart.')));
                 },
-                child: const Text('Add to Cart'),
+                child: const Text("Add to Cart"),
               ),
             ),
 
             const SizedBox(height: 16),
 
-            // PREVIEW TITLE
-            const Text(
-              'Preview',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
+            const Text("Preview",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             const SizedBox(height: 8),
 
-// PREVIEW BOX (blurred if exists)
+            // TAP TO PREVIEW AREA
             GestureDetector(
               onTap: () {
-                if (note.imagePath == null || note.imagePath!.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Preview image is not available.'),
-                    ),
-                  );
+                if (previewImage == null || previewImage.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Preview image not available"),
+                  ));
                   return;
                 }
 
-                // POPUP – net görüntü + açıklama
                 showDialog(
                   context: context,
-                  builder: (context) {
+                  builder: (_) {
                     return Dialog(
                       insetPadding: const EdgeInsets.all(16),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Başlık
                           Padding(
                             padding: const EdgeInsets.all(12),
-                            child: Text(
-                              'Preview – First Page',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
+                            child: Text("Preview – First Page",
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
 
-                          // Açıklama
+                          // EXPLANATION
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
                               note.description,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.black87,
-                              ),
+                              style: const TextStyle(fontSize: 13),
                             ),
                           ),
 
                           const SizedBox(height: 10),
 
-                          // NET GÖRÜNTÜ
-                          Flexible(
+                          // IMAGE INSIDE POPUP (WEB + MOBILE)
+                          SizedBox(
+                            height: 400,
                             child: InteractiveViewer(
-                              child: Image.file(
-                                File(note.imagePath!),
-                                fit: BoxFit.contain,
-                              ),
+                              child: kIsWeb
+                                  ? Image.network(previewImage!, fit: BoxFit.cover)
+                                  : Image.file(File(previewImage!), fit: BoxFit.cover),
                             ),
                           ),
 
                           TextButton(
                             onPressed: () => Navigator.pop(context),
                             child: const Text("Close"),
-                          ),
+                          )
                         ],
                       ),
                     );
@@ -241,12 +172,13 @@ class NoteDetailScreen extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: Colors.grey.shade300,
-                  image: note.imagePath != null && note.imagePath!.isNotEmpty
+                  color: Colors.grey.shade400,
+                  image: previewImage != null
                       ? DecorationImage(
-                    image: FileImage(File(note.imagePath!)),
+                    image: kIsWeb
+                        ? NetworkImage(previewImage!)
+                        : FileImage(File(previewImage!)) as ImageProvider,
                     fit: BoxFit.cover,
-                    // ❗️BULANIKLIK BURADA
                     colorFilter: ColorFilter.mode(
                       Colors.black.withOpacity(0.3),
                       BlendMode.darken,
@@ -256,58 +188,19 @@ class NoteDetailScreen extends StatelessWidget {
                 ),
                 child: const Center(
                   child: Text(
-                    'Tap to Preview',
+                    "Tap to Preview",
                     style: TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
               ),
             ),
 
+            const SizedBox(height: 24),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// Küçük comment kartı widget'ı
-class _CommentTile extends StatelessWidget {
-  final String name;
-  final String comment;
-
-  const _CommentTile({
-    required this.name,
-    required this.comment,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            name,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            comment,
-            style: const TextStyle(fontSize: 12),
-          ),
-        ],
       ),
     );
   }

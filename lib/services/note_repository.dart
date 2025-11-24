@@ -88,6 +88,30 @@ class NoteRepository {
   /// Eski kodun `NoteRepository.instance.add(newNote);` diye çağırıyor.
   /// Bunu upload edilen not olarak da sayalım.
   void add(NoteModel note) => addUploaded(note);
+  void updateNote(String id, String newTitle, String newDesc, double newPrice) {
+    final current = List<NoteModel>.from(_notesNotifier.value);
+
+    final index = current.indexWhere((n) => n.id == id);
+    if (index == -1) return;
+
+    final old = current[index];
+
+    final updated = NoteModel(
+      id: old.id,
+      title: newTitle,
+      courseCode: old.courseCode,
+      instructor: old.instructor,
+      price: newPrice,
+      description: newDesc,
+      taName: old.taName,
+      taRole: old.taRole,
+      imageUrl: old.imageUrl,
+      imagePath: old.imagePath,
+    );
+
+    current[index] = updated;
+    _notesNotifier.value = current;
+  }
 
   void addUploaded(NoteModel note) {
     if (!_uploadedIds.contains(note.id)) {

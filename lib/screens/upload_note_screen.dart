@@ -1,13 +1,5 @@
-// FILE: lib/screens/upload_note_screen.dart
-
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-
-import '../models/note_model.dart';
-import '../services/note_repository.dart';
-import '../utils/app_colors.dart';
+import '../utils/app_colors2.dart';
 
 class UploadNoteScreen extends StatefulWidget {
   const UploadNoteScreen({super.key});
@@ -17,185 +9,184 @@ class UploadNoteScreen extends StatefulWidget {
 }
 
 class _UploadNoteScreenState extends State<UploadNoteScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _courseController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _priceController = TextEditingController();
-
-  File? _pickedImageFile;
-
-  @override
-  void dispose() {
-    _courseController.dispose();
-    _descriptionController.dispose();
-    _priceController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() {
-        _pickedImageFile = File(picked.path);
-      });
-    }
-  }
-
-  void _submit() {
-    final isValid = _formKey.currentState!.validate();
-    if (!isValid) {
-      _showErrorDialog('Please fix the errors and try again.');
-      return;
-    }
-
-    if (_pickedImageFile == null) {
-      _showErrorDialog('Please choose a preview image for your note.');
-      return;
-    }
-
-    final price = double.parse(_priceController.text.trim());
-
-    final newNote = NoteModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: '${_courseController.text.trim()} – Uploaded Notes',
-      courseCode: _courseController.text.trim(),
-      instructor: 'Unknown',
-      price: price,
-      description: _descriptionController.text.trim(),
-      taName: 'You',
-      taRole: 'Student',
-      imagePath: _pickedImageFile!.path,
-    );
-
-    NoteRepository.instance.add(newNote);
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Uploaded!'),
-        content: const Text(
-          'Your note has been uploaded successfully and is now visible in the market.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // dialog
-              Navigator.of(context).pop(); // screen
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Form Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
+  final TextEditingController courseController = TextEditingController();
+  final TextEditingController definitionController = TextEditingController();
+  final TextEditingController fileController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final fileButtonText = _pickedImageFile == null
-        ? 'Choose file (image)'
-        : 'Selected: ${_pickedImageFile!.path.split('/').last}';
+    const background = Color(0xFF171B34);
 
     return Scaffold(
+      backgroundColor: background,
       appBar: AppBar(
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
-        title: const Text('Upload Note'),
+        backgroundColor: background,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 26),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Course Name'),
-              const SizedBox(height: 4),
-              TextFormField(
-                controller: _courseController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'CS204 – Advanced Programming',
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Course name is required';
-                  }
-                  return null;
-                },
+
+      body: Stack(
+        children: [
+          // LEFT BACKGROUND CIRCLE
+          Positioned(
+            left: -80,
+            top: 120,
+            child: Container(
+              width: 240,
+              height: 240,
+              decoration: const BoxDecoration(
+                color: Color(0xFFD4F2FA),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 16),
-              const Text('Note Definition'),
-              const SizedBox(height: 4),
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Short description of your notes...',
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().length < 10) {
-                    return 'Please enter at least 10 characters';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              const Text('Price (₺)'),
-              const SizedBox(height: 4),
-              TextFormField(
-                controller: _priceController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'e.g., 25',
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Price is required';
-                  }
-                  final parsed = double.tryParse(value);
-                  if (parsed == null || parsed <= 0) {
-                    return 'Please enter a valid positive number';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              const Text('File'),
-              const SizedBox(height: 4),
-              OutlinedButton.icon(
-                onPressed: _pickImage,
-                icon: const Icon(Icons.attach_file),
-                label: Text(fileButtonText),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _submit,
-                  child: const Text('Upload Note'),
-                ),
-              ),
-            ],
+            ),
           ),
+
+          // RIGHT BACKGROUND CIRCLE
+          Positioned(
+            right: -80,
+            bottom: -20,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: const BoxDecoration(
+                color: Color(0xFFD4F2FA),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+
+                const Center(
+                  child: Text(
+                    "Upload Note",
+                    style: TextStyle(
+                      fontSize: 34,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // WHITE CARD
+                Container(
+                  margin: const EdgeInsets.all(22),
+                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(36),
+                  ),
+
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _label("COURSE NAME"),
+                      _textField(courseController, "Type your course name..."),
+
+                      const SizedBox(height: 24),
+
+                      _label("NOTE DEFINITION"),
+                      _textArea(definitionController, "Type your definition..."),
+
+                      const SizedBox(height: 24),
+
+                      _label("NOTE"),
+                      _textField(fileController, "Select the file you want to upload"),
+
+                      const SizedBox(height: 30),
+
+                      // UPLOAD BUTTON
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors2.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Upload Note",
+                                style: TextStyle(fontSize: 18, color: Colors.white),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(Icons.cloud_upload_outlined, color: Colors.white),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _label(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13,
+        letterSpacing: 1.2,
+        fontWeight: FontWeight.w600,
+        color: Colors.black87,
+      ),
+    );
+  }
+
+  Widget _textField(TextEditingController controller, String hint) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: AppColors2.greyText),
+          filled: true,
+          fillColor: AppColors2.lightGrey,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(22),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        ),
+      ),
+    );
+  }
+
+  Widget _textArea(TextEditingController controller, String hint) {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: TextField(
+        controller: controller,
+        maxLines: 5,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: AppColors2.greyText),
+          filled: true,
+          fillColor: AppColors2.lightGrey,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(22),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         ),
       ),
     );

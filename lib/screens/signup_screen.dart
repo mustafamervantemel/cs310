@@ -1,7 +1,5 @@
-/// FILE: lib/screens/signup_screen.dart
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
-import '../services/auth_service.dart';
+import '../utils/app_colors2.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -11,146 +9,203 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameCtl = TextEditingController();
-  final _emailCtl = TextEditingController();
-  final _passwordCtl = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameCtl.dispose();
-    _emailCtl.dispose();
-    _passwordCtl.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    final valid = _formKey.currentState!.validate();
-    if (!valid) return;
-
-    AuthService.register(_emailCtl.text, _passwordCtl.text);
-    AuthService.markLoggedIn();
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Account Created'),
-        content: const Text(
-          'Your account has been created successfully. '
-              'Let\'s quickly show you how SuNote works.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/onboarding1');
-            },
-            child: const Text('Continue'),
-          ),
-        ],
-      ),
-    );
-  }
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text('Sign Up'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
+      backgroundColor: AppColors2.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
+              const SizedBox(height: 20),
+
+              /// Geri Ok İşareti
+              IconButton(
+                icon: const Icon(Icons.arrow_back, size: 30, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+
+              const SizedBox(height: 40),
+
+              /// Başlık
+              const Center(
+                child: Text(
+                  "Create new\nAccount",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    height: 1.1,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              /// Alt başlık
+              const Center(
+                child: Text(
+                  "Already Registered? Log in here.",
+                  style: TextStyle(
+                    color: Colors.white60,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              /// NAME LABEL
               const Text(
-                'Create new Account',
+                "NAME",
                 style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                  color: Colors.white70,
+                  fontSize: 14,
+                  letterSpacing: 1.4,
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text('NAME'),
-              const SizedBox(height: 4),
-              TextFormField(
-                controller: _nameCtl,
-                decoration: const InputDecoration(
-                  hintText: 'Mustafa Alp Merdol',
+              const SizedBox(height: 8),
+
+              /// NAME FIELD
+              TextField(
+                controller: nameController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "Enter your full name",
+                  hintStyle: const TextStyle(color: Colors.white70),
+                  filled: true,
+                  fillColor: const Color(0xFF3A3F55),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Name is required';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 16),
-              const Text('EMAIL'),
-              const SizedBox(height: 4),
-              TextFormField(
-                controller: _emailCtl,
-                decoration: const InputDecoration(
-                  hintText: 'name@sabanciuniv.edu',
+
+              const SizedBox(height: 22),
+
+              /// EMAIL LABEL
+              const Text(
+                "EMAIL",
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  letterSpacing: 1.4,
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Email is required';
-                  }
-                  if (!value.contains('@sabanciuniv.edu')) {
-                    return 'Please use your Sabancı email';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 16),
-              const Text('PASSWORD'),
-              const SizedBox(height: 4),
-              TextFormField(
-                controller: _passwordCtl,
+              const SizedBox(height: 8),
+
+              /// EMAIL FIELD
+              TextField(
+                controller: emailController,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "example@sabanciuniv.edu",
+                  hintStyle: const TextStyle(color: Colors.white70),
+                  filled: true,
+                  fillColor: const Color(0xFF3A3F55),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 22),
+
+              /// PASSWORD LABEL
+              const Text(
+                "PASSWORD",
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  letterSpacing: 1.4,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              /// PASSWORD FIELD
+              TextField(
+                controller: passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: '********',
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "******",
+                  hintStyle: const TextStyle(color: Colors.white70),
+                  filled: true,
+                  fillColor: const Color(0xFF3A3F55),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Password is required';
-                  }
-                  if (value.length < 6) {
-                    return 'At least 6 characters';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 24),
+
+              const SizedBox(height: 40),
+
+              /// SIGN UP BUTTON
               SizedBox(
                 width: double.infinity,
+                height: 58,
                 child: ElevatedButton(
-                  onPressed: _submit,
-                  child: const Text('Sign Up'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors2.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/onboarding1');
+                  },
+                  child: const Text(
+                    "Sign Up",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Already Registered? '),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    child: const Text('Log in here.'),
-                  ),
-                ],
+
+              const SizedBox(height: 20),
+
+              /// Already have account?
+              Center(
+                child: Column(
+                  children: [
+                    const Text(
+                      "Already Have Account?",
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, '/login'),
+                      child: Text(
+                        "Login !",
+                        style: TextStyle(
+                          color: AppColors2.primary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
+
+              const SizedBox(height: 40),
             ],
           ),
         ),
