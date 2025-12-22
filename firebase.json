@@ -1,0 +1,28 @@
+v{
+    "firestore": {
+        "rules": "firestore.rules"
+    },
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "sunote-40266",
+                    "appId": "1:877334850068:android:4fc14865ed0522a54a9501",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "sunote-40266",
+                    "configurations": {
+                        "android": "1:877334850068:android:4fc14865ed0522a54a9501",
+                        "ios": "1:877334850068:ios:eddd83a546eb25ad4a9501",
+                        "macos": "1:877334850068:ios:eddd83a546eb25ad4a9501",
+                        "web": "1:877334850068:web:9a10b00a7bd231dd4a9501",
+                        "windows": "1:877334850068:web:34ac99f64e59c0064a9501"
+                    }
+                }
+            }
+        }
+    }
+}

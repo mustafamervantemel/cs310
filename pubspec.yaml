@@ -1,0 +1,44 @@
+name: cs310sunote
+description: "SuNote - A note sharing app for Sabanci University students"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Firebase packages
+  firebase_core: ^3.8.1
+  firebase_auth: ^5.3.4
+  cloud_firestore: ^5.6.0
+  firebase_storage: ^12.3.7
+  
+  # URL launcher for opening files
+  url_launcher: ^6.2.1
+  
+  # State management
+  provider: ^6.1.2
+  
+  # Local storage
+  shared_preferences: ^2.3.4
+  
+  # Image picker
+  image_picker: ^1.1.2
+  
+  # File picker for uploading documents
+  file_picker: ^8.0.0
+  
+  # Cupertino Icons
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
