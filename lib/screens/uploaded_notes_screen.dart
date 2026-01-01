@@ -38,15 +38,7 @@ class UploadedNotesScreen extends StatelessWidget {
               ),
             ),
 
-            // Search Bar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                child: const Row(children: [Text('SEARCH', style: TextStyle(color: Colors.white70)), Spacer(), Icon(Icons.search, color: Colors.white70)]),
-              ),
-            ),
+            
 
             const SizedBox(height: 16),
             const Padding(
