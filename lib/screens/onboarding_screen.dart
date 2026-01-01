@@ -88,7 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   TextButton(
                     onPressed: _nextPage,
                     child: Text(
-                      _currentPage == _pages.length - 1 ? 'GET STARTED' : 'ATLA',
+                      _currentPage == _pages.length - 1 ? 'GET STARTED' : 'SKIP',
                       style: const TextStyle(
                         color: AppColors.coral,
                         fontSize: 16,
