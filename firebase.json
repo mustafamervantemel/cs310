@@ -1,4 +1,4 @@
-v{
+{
     "firestore": {
         "rules": "firestore.rules"
     },
@@ -25,4 +25,5 @@ v{
             }
         }
     }
+
 }
